@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: go-api-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: go-api
+  template:
+    metadata:
+      labels:
+        app: go-api
+    spec:
+      containers:
+        - name: go-api-container
+          image: satyamvatstyagi/user-management-service:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GIN_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: GIN_MODE
+            - name: LOG_FILE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: LOG_FILE_PATH
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_NAME
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_PORT
+            - name: SERVICE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: SERVICE_PORT
+            - name: BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: BASIC_AUTH_USER
+            - name: BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: BASIC_AUTH_PASSWORD
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: JWT_SECRET_KEY
+            - name: JWT_EXPIRATION_TIME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: JWT_EXPIRATION_TIME
