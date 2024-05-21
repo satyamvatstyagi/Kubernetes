@@ -21,22 +21,22 @@ spec:
           env:
             - name: POSTGRES_DB
               valueFrom:
-                secretKeyRef:
-                  name: app-secrets
+                configMapKeyRef:
+                  name: postgres-config
                   key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
-                secretKeyRef:
-                  name: app-secrets
+                configMapKeyRef:
+                  name: postgres-config
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: postgres-secrets
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: postgres-storage
-              mountPath: /var/lib/postgresql/data
+              mountPath: /Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database
   volumeClaimTemplates:
     - metadata:
         name: postgres-storage
