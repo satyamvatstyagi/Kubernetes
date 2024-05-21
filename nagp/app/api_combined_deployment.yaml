@@ -1,0 +1,148 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: development
+data:
+  GIN_MODE: "debug"
+  LOG_FILE_PATH: "./log"
+  DATABASE_HOST: "10-244-0-74.postgres-headless.development.svc.cluster.local"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: api-secrets
+  namespace: development
+type: Opaque
+data:
+  DATABASE_NAME: dXNlcmRi
+  DATABASE_USER: c2F0eWFt
+  DATABASE_PASSWORD: bmFnYXJybw==
+  DATABASE_PORT: NTQzMg==
+  SERVICE_PORT: ODA4MA==
+  BASIC_AUTH_USER: YXV0aF91c2Vy
+  BASIC_AUTH_PASSWORD: YXV0aF9wYXNz
+  JWT_SECRET_KEY: MTIzNDVfU2F0eWFt
+  JWT_EXPIRATION_TIME: NjA=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-api-deployment
+  namespace: development
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: go-api
+  template:
+    metadata:
+      labels:
+        app: go-api
+    spec:
+      containers:
+        - name: go-api-container
+          image: satyamvatstyagi/user-management-service:1.0.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GIN_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: GIN_MODE
+            - name: LOG_FILE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: LOG_FILE_PATH
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_NAME
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: api-config
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_PORT
+            - name: SERVICE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: SERVICE_PORT
+            - name: BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: BASIC_AUTH_USER
+            - name: BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: BASIC_AUTH_PASSWORD
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: JWT_SECRET_KEY
+            - name: JWT_EXPIRATION_TIME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: JWT_EXPIRATION_TIME
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: go-api-hpa
+  namespace: development
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: go-api-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-api-loadbalancer
+  namespace: development
+spec:
+  type: LoadBalancer
+  selector:
+    app: go-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
