@@ -1,7 +1,7 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
-  name: go-api-replicaset
+  name: go-api-deployment
 spec:
   replicas: 3
   selector:
@@ -78,3 +78,8 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: JWT_EXPIRATION_TIME
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
