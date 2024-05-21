@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-statefulset
+  name: postgres
 spec:
   serviceName: postgres
   replicas: 1
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:latest
+          image: postgres:13
           ports:
             - containerPort: 5432
           env:
@@ -36,7 +36,7 @@ spec:
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: postgres-storage
-              mountPath: /Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database
+              mountPath: "/Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database"
   volumeClaimTemplates:
     - metadata:
         name: postgres-storage
