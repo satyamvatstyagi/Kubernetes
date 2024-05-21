@@ -7,7 +7,7 @@ metadata:
 data:
   GIN_MODE: "debug"
   LOG_FILE_PATH: "./log"
-  DATABASE_HOST: "10-244-0-74.postgres-headless.development.svc.cluster.local"
+  DATABASE_HOST: "postgres-headless.development.svc.cluster.local"
 ---
 apiVersion: v1
 kind: Secret
