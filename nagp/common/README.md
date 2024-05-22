@@ -4,7 +4,7 @@ This repository contains Kubernetes configuration files for deploying a Postgres
 
 ## Postgres
 
-The Postgres configuration includes the following resources:
+The Postgres configuration includes the following resources(in the `development` namespace):
 
 - ConfigMap: `postgres-config`
 - Secret: `postgres-secrets`
@@ -15,13 +15,13 @@ The Postgres configuration includes the following resources:
 
 ## Go API
 
-The Go API configuration includes the following resources:
+The Go API configuration includes the following resources(in the `development` namespace):
 
-- ConfigMap: `api-config` (in the `development` namespace)
-- Secret: `api-secrets` (in the `development` namespace)
-- Deployment: `go-api-deployment` (in the `development` namespace)
-- HorizontalPodAutoscaler: `go-api-hpa` (in the `development` namespace)
-- Service: `go-api-loadbalancer` (in the `development` namespace)
-- Ingress: `go-api-ingress` (in the `development` namespace)
+- ConfigMap: `api-config`
+- Secret: `api-secrets`
+- Deployment: `go-api-deployment`
+- HorizontalPodAutoscaler: `go-api-hpa`
+- Service: `go-api-loadbalancer`
+- Ingress: `go-api-ingress`
 
 For more details on each resource, please refer to the individual YAML files in this repository.
