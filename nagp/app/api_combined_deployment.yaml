@@ -153,3 +153,23 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-api-ingress
+  namespace: development
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: "go-api.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: go-api-loadbalancer
+                port:
+                  number: 80
