@@ -1,4 +1,9 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: development
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-config
@@ -15,22 +20,6 @@ metadata:
 type: Opaque
 data:
   POSTGRES_PASSWORD: bmFnYXJybw==
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-headless
-  namespace: development
-  labels:
-    app: postgres
-spec:
-  clusterIP: None
-  selector:
-    app: postgres
-  ports:
-    - name: postgres
-      port: 5432
-      targetPort: 5432
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -59,6 +48,22 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: standard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+  namespace: development
+  labels:
+    app: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -99,7 +104,7 @@ spec:
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: postgres-storage
-              mountPath: "/Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database"
+              mountPath: "/var/lib/postgresql/data"
   volumeClaimTemplates:
     - metadata:
         name: postgres-storage
@@ -109,8 +114,6 @@ spec:
           requests:
             storage: 1Gi
         storageClassName: standard
----
-
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -266,3 +269,23 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-api-ingress
+  namespace: development
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: "go-api.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: go-api-loadbalancer
+                port:
+                  number: 80
