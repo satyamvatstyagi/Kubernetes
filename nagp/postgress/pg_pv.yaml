@@ -10,4 +10,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
   hostPath:
-    path: "/Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database"
+    path: "/var/lib/postgresql/data"

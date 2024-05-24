@@ -7,6 +7,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-config
+  namespace: development
 data:
   POSTGRES_DB: "userdb"
   POSTGRES_USER: "satyam"
@@ -15,6 +16,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secrets
+  namespace: development
 type: Opaque
 data:
   POSTGRES_PASSWORD: bmFnYXJybw==
@@ -23,6 +25,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: postgres-pv
+  namespace: development
 spec:
   capacity:
     storage: 1Gi
@@ -31,12 +34,13 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
   hostPath:
-    path: "/Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database"
+    path: "/var/lib/postgresql/data"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
+  namespace: development
 spec:
   accessModes:
     - ReadWriteOnce
@@ -49,6 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-headless
+  namespace: development
   labels:
     app: postgres
 spec:
@@ -64,6 +69,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  namespace: development
 spec:
   serviceName: "postgres-headless"
   replicas: 1
@@ -98,7 +104,7 @@ spec:
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: postgres-storage
-              mountPath: "/Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database"
+              mountPath: "/var/lib/postgresql/data"
   volumeClaimTemplates:
     - metadata:
         name: postgres-storage

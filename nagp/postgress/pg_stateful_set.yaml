@@ -36,7 +36,7 @@ spec:
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: postgres-storage
-              mountPath: "/Users/satyamvats/Documents/ioco/poc/Kubernetes/nagp/postgress/database"
+              mountPath: "/var/lib/postgresql/data"
   volumeClaimTemplates:
     - metadata:
         name: postgres-storage
